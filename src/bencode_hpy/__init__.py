@@ -1,4 +1,4 @@
-from _bencode import (
+from bencode_hpy._bencode import (
     __version__,
     bdecode,
     bencode,

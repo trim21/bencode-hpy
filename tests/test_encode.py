@@ -1,5 +1,4 @@
 import collections
-import unittest
 from typing import Any
 
 import pytest
@@ -8,58 +7,60 @@ import bencode_hpy
 from bencode_hpy import BencodeEncodeError
 
 
-class EncodeTestCase(unittest.TestCase):
-    def test_exception_when_strict(self):
-        invalid_obj = None
-        with self.assertRaises(BencodeEncodeError):
-            bencode_hpy.bencode(invalid_obj)
+def test_exception_when_strict():
+    invalid_obj = None
+    with pytest.raises(BencodeEncodeError):
+        bencode_hpy.bencode(invalid_obj)
 
-    def test_encode_str(self):
-        coded = bencode_hpy.bencode("ThisIsAString")
-        self.assertEqual(
-            coded, b"13:ThisIsAString", msg="Failed to encode string from str."
-        )
 
-    def test_encode_int(self):
-        coded = bencode_hpy.bencode(42)
-        self.assertEqual(coded, b"i42e", msg="Failed to encode integer from int.")
+def test_encode_str():
+    coded = bencode_hpy.bencode("ThisIsAString")
+    assert coded == b"13:ThisIsAString", "Failed to encode string from str."
 
-    def test_encode_bytes(self):
-        b = b"TheseAreSomeBytes"
-        coded = bencode_hpy.bencode(b)
-        s = bytes(str(len(b)), "utf-8")
-        self.assertEqual(coded, s + b":" + b, msg="Failed to encode string from bytes.")
 
-    def test_encode_list(self):
-        s = ["a", "b", 3]
-        coded = bencode_hpy.bencode(s)
-        self.assertEqual(coded, b"l1:a1:bi3ee", msg="Failed to encode list from list.")
+def test_encode_int():
+    coded = bencode_hpy.bencode(42)
+    assert coded == b"i42e", "Failed to encode integer from int."
 
-    def test_encode_tuple(self):
-        t = ("a", "b", 3)
-        coded = bencode_hpy.bencode(t)
-        self.assertEqual(coded, b"l1:a1:bi3ee", msg="Failed to encode list from tuple.")
 
-    def test_encode_dict(self):
-        od = collections.OrderedDict()
-        od["ka"] = "va"
-        od["kb"] = 2
-        coded = bencode_hpy.bencode(od)
-        self.assertEqual(
-            coded, b"d2:ka2:va2:kbi2ee", msg="Failed to encode dictionary from dict."
-        )
+def test_encode_bytes():
+    b = b"TheseAreSomeBytes"
+    coded = bencode_hpy.bencode(b)
+    s = bytes(str(len(b)), "utf-8")
+    assert coded == s + b":" + b, "Failed to encode string from bytes."
 
-    def test_encode_complex(self):
-        od = collections.OrderedDict()
-        od["KeyA"] = ["listitemA", {"k": "v"}, 3]
-        od["KeyB"] = {"k": "v"}
-        od["KeyC"] = 3
-        od["KeyD"] = "AString"
-        expected_result = (
-            b"d4:KeyAl9:listitemAd1:k1:vei3ee4:KeyBd1:k1:ve4:KeyCi3e4:KeyD7:AStringe"
-        )
-        coded = bencode_hpy.bencode(od)
-        self.assertEqual(coded, expected_result, msg="Failed to encode complex object.")
+
+def test_encode_list():
+    s = ["a", "b", 3]
+    coded = bencode_hpy.bencode(s)
+    assert coded == b"l1:a1:bi3ee", "Failed to encode list from list."
+
+
+def test_encode_tuple():
+    t = ("a", "b", 3)
+    coded = bencode_hpy.bencode(t)
+    assert coded == b"l1:a1:bi3ee", "Failed to encode list from tuple."
+
+
+def test_encode_dict():
+    od = collections.OrderedDict()
+    od["kb"] = 2
+    od["ka"] = "va"
+    coded = bencode_hpy.bencode(od)
+    assert coded == b"d2:ka2:va2:kbi2ee", "Failed to encode dictionary from dict."
+
+
+def test_encode_complex():
+    od = collections.OrderedDict()
+    od["KeyA"] = ["listitemA", {"k": "v"}, 3]
+    od["KeyB"] = {"k": "v"}
+    od["KeyC"] = 3
+    od["KeyD"] = "AString"
+    expected_result = (
+        b"d4:KeyAl9:listitemAd1:k1:vei3ee4:KeyBd1:k1:ve4:KeyCi3e4:KeyD7:AStringe"
+    )
+    coded = bencode_hpy.bencode(od)
+    assert coded == expected_result, "Failed to encode complex object."
 
 
 def test_encode():

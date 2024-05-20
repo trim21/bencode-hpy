@@ -1,0 +1,20 @@
+version: 3
+tasks:
+  build:
+    sources:
+      - src/**/*.c
+      - src/**/*.h
+      - src/**/*.py
+      - tests/**/*.py
+      - tests/*.py
+      - '*.py'
+    generates:
+      - src/**/*.so
+    env:
+      HPY: trace
+      CFLAGS: "-O0 -g"
+    cmds:
+      - cmd: python setup.py build_ext --inplace
+        silent: true
+      - PYTHONPATH=src python -X faulthandler a.py
+      - pytest -x -v -s

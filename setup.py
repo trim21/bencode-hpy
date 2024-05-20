@@ -2,6 +2,7 @@ from setuptools import setup, Extension
 
 import os.path
 import re
+from glob import glob
 
 CLASSIFIERS = [
     "Development Status :: 5 - Production/Stable",
@@ -16,11 +17,7 @@ CLASSIFIERS = [
 
 module1 = Extension(
     "src.bencode_hpy._bencode",
-    sources=[
-        "./src/bencode_hpy/bencode.c",
-        "./src/bencode_hpy/decode.c",
-        "./src/bencode_hpy/encode.c",
-    ],
+    sources=glob("./src/bencode_hpy/*.c"),
     include_dirs=["./src/bencode_hpy"],
     extra_compile_args=["-D_GNU_SOURCE"],
 )
