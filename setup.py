@@ -2,7 +2,6 @@ from glob import glob
 
 from setuptools import find_packages, setup, Extension
 
-
 module = Extension(
     "bencode_hpy._bencode",
     sources=glob("./src/bencode_hpy/*.c"),
@@ -11,7 +10,10 @@ module = Extension(
 
 setup(
     name="bencode-hpy",
-    setup_requires=["hpy>=0.9.0,<1.0.0", "wheel"],
+    setup_requires=[
+        'hpy>=0.9.0,<1.0.0; implementation_name == "cpython"',
+        "wheel",
+    ],
     py_modules=[],
     version='0.0.1',
     description="A fast and correct bencode encoder and decoder",
