@@ -79,7 +79,7 @@ static HPy decode_int(HPyContext *ctx, const char *buf, HPy_ssize_t *index, HPy_
 // there is no bytes/str in bencode, they only have 1 type for both of them.
 static HPy decode_str(HPyContext *ctx, const char *buf, HPy_ssize_t *index, HPy_ssize_t size)
 {
-    HPy_ssize_t index_sep;
+    HPy_ssize_t index_sep = 0;
     for (HPy_ssize_t i = *index; i < size; i++)
     {
         if (buf[i] == ':')

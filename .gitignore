@@ -19,7 +19,7 @@ __pycache__
 build/
 dist/
 .eggs/
-.egg-info/
+*.egg-info/
 
 # Added by cargo
 

@@ -1,4 +1,4 @@
-from setuptools import setup, Extension
+from setuptools import find_packages, setup, Extension
 
 import os.path
 import re
@@ -16,14 +16,9 @@ CLASSIFIERS = [
 ]
 
 module1 = Extension(
-    "src.bencode_hpy._bencode",
+    "bencode_hpy._bencode",
     sources=glob("./src/bencode_hpy/*.c"),
     include_dirs=["./src/bencode_hpy"],
-    extra_compile_args=[
-        "-D_GNU_SOURCE",
-        # "-DLLVM_ENABLE_RUNTIMES=all",
-        # "-fsanitize=address",
-    ],
 )
 
 
@@ -43,16 +38,17 @@ def get_version():
 
 setup(
     name="bencode-hpy",
-    setup_requires=["hpy>=0.9.0,<1.0.0"],
+    setup_requires=["hpy>=0.9.0,<1.0.0", "wheel"],
     py_modules=[],
     version=get_version(),
-    description="Ultra fast JSON encoder and decoder for Python",
+    description="A fast and correct bencode encoder and decoder",
     hpy_ext_modules=[module1],
-    author="Jonas Tarnstrom",
-    author_email="jonas.tarnstrom@esn.me",
-    download_url="http://github.com/esnme/ultrajson",
-    license="BSD License",
+    author="Trim21",
+    packages=find_packages("src"),
+    package_dir={"": "src"},
+    author_email="trim21.me@gmail.com",
+    download_url="http://github.com/trim21/bencode-hpy",
+    license="MIT License",
     platforms=["any"],
-    url="http://www.esn.me",
     classifiers=CLASSIFIERS,
 )

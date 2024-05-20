@@ -243,7 +243,7 @@ static int encodeAny(HPyContext *ctx, struct buffer *buf, HPy obj)
             HPy keyValue = HPy_GetItem_i(ctx, list, i); // tuple[bytes, Any]
             if (HPy_IsNull(keyValue))
             {
-                runtimeError(ctx, "why???!!!");
+                runtimeError(ctx, "failed to get key/value tuple from list");
                 return 1;
             }
             HPy key = HPy_GetItem_i(ctx, keyValue, 0);
