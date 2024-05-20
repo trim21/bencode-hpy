@@ -2,8 +2,6 @@
 
 #include "hpy.h"
 
-#include "version.h"
-
 extern HPyDef bdecode;
 extern HPyDef bencode;
 
@@ -32,13 +30,6 @@ bool init_exceptions(HPyContext *ctx, HPy mod)
 
 HPyDef_SLOT(bencode_exec, HPy_mod_exec) static int bencode_exec_impl(HPyContext *ctx, HPy module)
 {
-    HPy version_string = HPyUnicode_FromString(ctx, BENCODE_VERSION);
-    if (HPy_IsNull(version_string))
-    {
-        return 1;
-    }
-    HPy_SetAttr_s(ctx, module, "__version__", version_string);
-
     if (!init_exceptions(ctx, module))
     {
         HPyErr_SetString(ctx, ctx->h_RuntimeError, "failed to init exceptions");
