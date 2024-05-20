@@ -15,6 +15,7 @@ setup(
         "wheel",
     ],
     py_modules=[],
+    long_description="",
     version='0.0.1',
     description="A fast and correct bencode encoder and decoder",
     hpy_ext_modules=[module],
