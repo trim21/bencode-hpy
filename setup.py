@@ -44,6 +44,7 @@ setup(
     description="A fast and correct bencode encoder and decoder",
     hpy_ext_modules=[module1],
     author="Trim21",
+    python_requires=">=3.8,<4",
     packages=find_packages("src"),
     package_dir={"": "src"},
     author_email="trim21.me@gmail.com",
