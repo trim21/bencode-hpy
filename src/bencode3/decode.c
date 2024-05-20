@@ -5,7 +5,7 @@ static HPy decode_any(HPyContext *ctx, const char *buf, HPy_ssize_t index)
     return ctx->h_None;
 }
 
-HPyDef_METH(decode, "decode", HPyFunc_O) static HPy decode_impl(HPyContext *ctx, HPy self, HPy b)
+HPyDef_METH(bdecode, "bdecode", HPyFunc_O) static HPy bdecode_impl(HPyContext *ctx, HPy self, HPy b)
 {
     // self is the module object
     if (!HPyBytes_Check(ctx, b))

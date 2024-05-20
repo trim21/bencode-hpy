@@ -1,0 +1,14 @@
+[tool.cibuildwheel.environment]
+HATCH_BUILD_HOOKS_ENABLE = "1"
+
+[tool.mypy]
+python_version = "3.8"
+strict = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_configs = true
+show_error_codes = true
+
+[tool.pytest.ini_options]
+pythonpath = ['src']

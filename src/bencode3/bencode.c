@@ -1,8 +1,8 @@
 #include "hpy.h"
 #include "version.h"
 
-extern HPyDef decode;
-extern HPyDef encode;
+extern HPyDef bdecode;
+extern HPyDef bencode;
 
 HPyDef_SLOT(bencode_exec, HPy_mod_exec) static int bencode_exec_impl(HPyContext *ctx, HPy module)
 {
@@ -17,7 +17,7 @@ HPyDef_SLOT(bencode_exec, HPy_mod_exec) static int bencode_exec_impl(HPyContext 
     return 0;
 }
 
-static HPyDef *module_defines[] = {&bencode_exec, &decode, &encode, NULL};
+static HPyDef *module_defines[] = {&bencode_exec, &bdecode, &bencode, NULL};
 
 static HPyModuleDef moduledef = {
     .defines = module_defines,

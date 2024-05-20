@@ -71,7 +71,7 @@ static int encode_any(HPyContext *ctx, struct buffer *buf, HPy obj)
     return 0;
 }
 
-HPyDef_METH(encode, "encode", HPyFunc_O) static HPy encode_impl(HPyContext *ctx, HPy self, HPy obj)
+HPyDef_METH(bencode, "bencode", HPyFunc_O) static HPy bencode_impl(HPyContext *ctx, HPy self, HPy obj)
 {
     // self is the module object
 

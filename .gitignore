@@ -4,34 +4,18 @@
 
 # IntelliJ project files
 .task/
-.idea
+.vscode/
 *.iml
 out
 gen
-.idea/inspectionProfiles/
-.idea/misc.xml
-.idea/modules.xml
-.idea/test.iml
-.idea/vcs.xml
-.idea/workspace.xml
-.vscode/
-a.ts
-com/
-cookies.json
-describe_github_user.py
-find_a.py
-get_co.py
-my
-t
-title
-tmp.py
-x
+.idea/
 .venv/
 .pytest_cache/
 __pycache__
 .httpx
 
 *.so
+*.py[cod]
 build/
 dist/
 .eggs/
@@ -40,4 +24,3 @@ dist/
 
 /target
 /data/
-logs/
