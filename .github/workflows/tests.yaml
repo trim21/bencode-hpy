@@ -47,7 +47,7 @@ jobs:
       - run: pip install -r req.txt
       - run: pip install -e .
 
-      - run: pytest
+      - run: pytest -sv
 
   test-pp:
     strategy:
@@ -71,4 +71,4 @@ jobs:
       - run: pip install -r req.txt
       - run: pip install -e .
 
-      - run: pytest
+      - run: pytest -sv
