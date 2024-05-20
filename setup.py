@@ -19,7 +19,11 @@ module1 = Extension(
     "src.bencode_hpy._bencode",
     sources=glob("./src/bencode_hpy/*.c"),
     include_dirs=["./src/bencode_hpy"],
-    extra_compile_args=["-D_GNU_SOURCE"],
+    extra_compile_args=[
+        "-D_GNU_SOURCE",
+        # "-DLLVM_ENABLE_RUNTIMES=all",
+        # "-fsanitize=address",
+    ],
 )
 
 

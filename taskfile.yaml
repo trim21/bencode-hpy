@@ -13,6 +13,7 @@ tasks:
     env:
       HPY: trace
       CFLAGS: "-O0 -g"
+      # LD_PRELOAD: libclang_rt.asan.so
     cmds:
       - cmd: python setup.py build_ext --inplace
         silent: true

@@ -1,5 +1,4 @@
 #include "stdio.h"
-
 #include "string.h"
 
 #include "hpy.h"
@@ -30,17 +29,11 @@ static inline void bencodeError(HPyContext *ctx, const char *data)
     HPyErr_SetString(ctx, HPyGlobal_Load(ctx, BencodeEncodeError), data);
 }
 
-struct str
-{
-    char *buf;
-    size_t len;
-};
-
 struct buffer
 {
     char *buf;
-    HPy_ssize_t len;
-    HPy_ssize_t cap;
+    size_t len;
+    size_t cap;
 };
 
 static struct buffer *newBuffer()
@@ -54,19 +47,20 @@ static struct buffer *newBuffer()
     return v;
 }
 
-static int writeBuffer(HPyContext *ctx, struct buffer *buf, const char *data, HPy_ssize_t size)
+static int bufferWrite(HPyContext *ctx, struct buffer *buf, const char *data, HPy_ssize_t size)
 {
     void *tmp;
 
     if (size + buf->len >= buf->cap)
     {
-        tmp = realloc(buf->buf, buf->cap * 2);
+        tmp = realloc(buf->buf, buf->cap * 2 + size);
         if (tmp == NULL)
         {
             runtimeError(ctx, "realloc failed");
             return 1;
         }
-        buf->cap = buf->cap * 2;
+        buf->cap = buf->cap * 2 + size;
+        buf->buf = tmp;
     }
 
     memcpy(buf->buf + buf->len, data, size);
@@ -82,7 +76,7 @@ static int bufferWriteLong(HPyContext *ctx, struct buffer *buf, long long val)
     int j = snprintf(NULL, 0, "%lld", val) + 1;
     char *s = malloc(sizeof(char) * j);
     snprintf(s, j, "%lld", val);
-    int r = writeBuffer(ctx, buf, s, j - 1);
+    int r = bufferWrite(ctx, buf, s, j - 1);
     free(s);
     return r;
 }
@@ -106,13 +100,10 @@ static int buildDictKeyList(HPyContext *ctx, HPy obj, HPy *list, HPy_ssize_t *co
 
     *count = HPy_Length(ctx, keys);
 
-    printf("count %ld\n", *count);
-
     HPyListBuilder b = HPyListBuilder_New(ctx, *count);
 
     for (HPy_ssize_t i = 0; i < *count; i++)
     {
-        printf("loop %ld\n", i);
         HPy key = HPy_GetItem_i(ctx, keys, i);
         HPy value = HPy_GetItem(ctx, obj, key);
         HPy keyAsBytes = key;
@@ -127,7 +118,7 @@ static int buildDictKeyList(HPyContext *ctx, HPy obj, HPy *list, HPy_ssize_t *co
             return 1;
         }
 
-        HPy tu = HPyTuple_Pack(ctx, 2, key, value);
+        HPy tu = HPyTuple_Pack(ctx, 2, keyAsBytes, value);
         if (HPy_IsNull(tu))
         {
             runtimeError(ctx, "can not pack key value pair");
@@ -136,8 +127,6 @@ static int buildDictKeyList(HPyContext *ctx, HPy obj, HPy *list, HPy_ssize_t *co
 
         HPyListBuilder_Set(ctx, b, i, tu);
     }
-
-    printf("buidl list\n");
 
     *list = HPyListBuilder_Build(ctx, b);
 
@@ -148,7 +137,7 @@ static int buildDictKeyList(HPyContext *ctx, HPy obj, HPy *list, HPy_ssize_t *co
     }
 
     HPy_Close(ctx, sortName);
-    HPy_Close(ctx, keys);
+    // HPy_Close(ctx, keys);
 
     // check duplicated keys
     const char *currentKey = NULL;
@@ -186,20 +175,19 @@ static int encodeBytes(HPyContext *ctx, struct buffer *buf, HPy obj)
     const char *data = HPyBytes_AsString(ctx, obj);
 
     returnIfError(bufferWriteLong(ctx, buf, size));
-    returnIfError(writeBuffer(ctx, buf, ":", 1));
-    return writeBuffer(ctx, buf, data, size);
+    returnIfError(bufferWrite(ctx, buf, ":", 1));
+    return bufferWrite(ctx, buf, data, size);
 }
 
 static int encodeAny(HPyContext *ctx, struct buffer *buf, HPy obj)
 {
-    printf("encode value\n");
     if (HPy_Is(ctx, ctx->h_True, obj))
     {
-        return writeBuffer(ctx, buf, "i1e", 3);
+        return bufferWrite(ctx, buf, "i1e", 3);
     }
     else if (HPy_Is(ctx, ctx->h_False, obj))
     {
-        return writeBuffer(ctx, buf, "i0e", 3);
+        return bufferWrite(ctx, buf, "i0e", 3);
     }
     else if (HPyBytes_Check(ctx, obj))
     {
@@ -211,34 +199,38 @@ static int encodeAny(HPyContext *ctx, struct buffer *buf, HPy obj)
         const char *data = HPyUnicode_AsUTF8AndSize(ctx, obj, &size);
 
         returnIfError(bufferWriteLong(ctx, buf, size));
-        returnIfError(writeBuffer(ctx, buf, ":", 1));
-        return writeBuffer(ctx, buf, data, size);
+        returnIfError(bufferWrite(ctx, buf, ":", 1));
+        return bufferWrite(ctx, buf, data, size);
     }
     else if (HPyLong_Check(ctx, obj))
     {
-        printf("encode long\n");
-        HPy_ssize_t size = HPyLong_AsSize_t(ctx, obj);
+        long long val = HPyLong_AsLongLong(ctx, obj);
 
-        returnIfError(writeBuffer(ctx, buf, "i", 1));
-        returnIfError(bufferWriteLong(ctx, buf, size));
-        return writeBuffer(ctx, buf, "e", 1);
+        // python int may overflow c long long
+        if (HPyErr_Occurred(ctx))
+        {
+            return 1;
+        }
+
+        returnIfError(bufferWrite(ctx, buf, "i", 1));
+        returnIfError(bufferWriteLong(ctx, buf, val));
+        return bufferWrite(ctx, buf, "e", 1);
     }
     else if (HPyList_Check(ctx, obj) || HPyTuple_Check(ctx, obj))
     {
         HPy_ssize_t len = HPy_Length(ctx, obj);
-        returnIfError(writeBuffer(ctx, buf, "l", 1));
+        returnIfError(bufferWrite(ctx, buf, "l", 1));
 
         for (HPy_ssize_t i = 0; i < len; i++)
         {
             HPy o = HPy_GetItem_i(ctx, obj, i);
             returnIfError(encodeAny(ctx, buf, o));
         }
-        return writeBuffer(ctx, buf, "e", 1);
+        return bufferWrite(ctx, buf, "e", 1);
     }
     else if (HPyDict_Check(ctx, obj))
     {
-        printf("encode dict\n");
-        returnIfError(writeBuffer(ctx, buf, "d", 1));
+        returnIfError(bufferWrite(ctx, buf, "d", 1));
         HPy list = HPy_NULL;
         HPy_ssize_t count = 0;
         if (buildDictKeyList(ctx, obj, &list, &count))
@@ -246,18 +238,14 @@ static int encodeAny(HPyContext *ctx, struct buffer *buf, HPy obj)
             return 1;
         }
 
-        printf("count %ld\n", count);
-
         for (HPy_ssize_t i = 0; i < count; i++)
         {
-            printf("451\n");
             HPy keyValue = HPy_GetItem_i(ctx, list, i); // tuple[bytes, Any]
             if (HPy_IsNull(keyValue))
             {
                 runtimeError(ctx, "why???!!!");
                 return 1;
             }
-            printf("452\n");
             HPy key = HPy_GetItem_i(ctx, keyValue, 0);
             HPy value = HPy_GetItem_i(ctx, keyValue, 1);
             if (HPy_IsNull(key))
@@ -270,30 +258,23 @@ static int encodeAny(HPyContext *ctx, struct buffer *buf, HPy obj)
                 runtimeError(ctx, "can't get value");
                 return 1;
             }
-            printf("453\n");
             if (encodeBytes(ctx, buf, key))
             {
-                printf("5\n");
                 HPy_Close(ctx, list);
                 return 1;
             }
-            printf("454\n");
             if (encodeAny(ctx, buf, value))
             {
-                printf("6\n");
                 HPy_Close(ctx, list);
                 return 1;
             }
 
-            printf("7\n");
             HPy_Close(ctx, key);
             HPy_Close(ctx, value);
         }
 
-        printf("8\n");
-
         HPy_Close(ctx, list);
-        return writeBuffer(ctx, buf, "e", 1);
+        return bufferWrite(ctx, buf, "e", 1);
     }
 
     HPy typ = HPy_Type(ctx, obj);

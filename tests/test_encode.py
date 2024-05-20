@@ -99,7 +99,7 @@ def test_duplicated_type_keys():
 
 
 def test_dict_int_keys():
-    with pytest.raises(TypeError):
+    with pytest.raises(BencodeEncodeError):
         bencode_hpy.bencode({1: 2})
 
 
@@ -112,8 +112,6 @@ def test_dict_int_keys():
         (True, b"i1e"),
         (False, b"i0e"),
         (-3, b"i-3e"),
-        (9223372036854775808, b"i9223372036854775808e"),  # longlong int +1
-        (18446744073709551616, b"i18446744073709551616e"),  # unsigned long long +1
         (4927586304, b"i4927586304e"),
         ([b"spam", b"eggs"], b"l4:spam4:eggse"),
         ({b"cow": b"moo", b"spam": b"eggs"}, b"d3:cow3:moo4:spam4:eggse"),
@@ -123,3 +121,13 @@ def test_dict_int_keys():
 )
 def test_basic(raw: Any, expected: bytes):
     assert bencode_hpy.bencode(raw) == expected
+
+
+def test_overflow():
+    with pytest.raises(OverflowError):
+        # b"i9223372036854775808e",  # longlong int +1
+        bencode_hpy.bencode(9223372036854775808)
+
+    with pytest.raises(OverflowError):
+        # b"i18446744073709551616e",  # unsigned long long +1
+        bencode_hpy.bencode(18446744073709551616)

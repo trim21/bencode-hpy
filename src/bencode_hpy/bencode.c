@@ -1,7 +1,8 @@
-#include "hpy.h"
-#include "hpy/hpymodule.h"
-#include "version.h"
 #include <stdio.h>
+
+#include "hpy.h"
+
+#include "version.h"
 
 extern HPyDef bdecode;
 extern HPyDef bencode;
