@@ -53,6 +53,7 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_BUILD: ${{ matrix.build }}
+          CIBW_SKIP: 'pp38*'
 
       - run: ls ./wheelhouse/
 
