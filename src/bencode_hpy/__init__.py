@@ -1,5 +1,4 @@
 from bencode_hpy._bencode import (
-    __version__,
     bdecode,
     bencode,
     BencodeDecodeError,
@@ -7,7 +6,6 @@ from bencode_hpy._bencode import (
 )
 
 __all__ = [
-    "__version__",
     "bdecode",
     "bencode",
     "BencodeDecodeError",
