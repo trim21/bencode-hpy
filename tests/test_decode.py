@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from bencode3 import BencodeDecodeError, bdecode
+from bencode_hpy import BencodeDecodeError, bdecode
 
 
 def test_non_bytes_input():

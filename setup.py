@@ -15,19 +15,19 @@ CLASSIFIERS = [
 ]
 
 module1 = Extension(
-    "_bencode",
+    "src.bencode_hpy._bencode",
     sources=[
-        "./src/bencode3/bencode.c",
-        "./src/bencode3/decode.c",
-        "./src/bencode3/encode.c",
+        "./src/bencode_hpy/bencode.c",
+        "./src/bencode_hpy/decode.c",
+        "./src/bencode_hpy/encode.c",
     ],
-    include_dirs=["./src/bencode3"],
+    include_dirs=["./src/bencode_hpy"],
     extra_compile_args=["-D_GNU_SOURCE"],
 )
 
 
 def get_version():
-    filename = os.path.join(os.path.dirname(__file__), "./src/bencode3/version.h")
+    filename = os.path.join(os.path.dirname(__file__), "./src/bencode_hpy/version.h")
     file = None
     try:
         file = open(filename)
