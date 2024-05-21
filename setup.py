@@ -9,7 +9,10 @@ module = Extension(
 )
 
 setup(
-    setup_requires=["hpy>=0.9.0,<1.0.0", "wheel"],
+    setup_requires=[
+        'hpy>=0.9.0,<1.0.0; implementation_name == "cpython"',
+        "wheel",
+    ],
     hpy_ext_modules=[module],
     packages=find_packages("src"),
     package_dir={"": "src"},
