@@ -1,2 +1,34 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bencode-hpy"
+version = "0.0.8"
+description = "A fast and correct bencode serialize/deserialize library"
+license = { text = "MIT" }
+requires-python = ">=3.8,<4.0"
+authors = [
+    { name = "trim21", email = "trim21me@gmail.com" },
+]
+readme = 'readme.md'
+keywords = [
+    "bencode",
+    "bittorrent",
+    "bit-torrent",
+    "serialize",
+    "deserialize",
+    'p2p',
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: C",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
 [tool.pytest.ini_options]
 pythonpath = ['src']

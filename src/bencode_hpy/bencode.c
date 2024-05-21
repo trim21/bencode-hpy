@@ -23,8 +23,8 @@ static bool init_exception(HPyContext *ctx, HPy mod, HPyGlobal *global, const ch
 
 bool init_exceptions(HPyContext *ctx, HPy mod)
 {
-    init_exception(ctx, mod, &BencodeDecodeError, "_bencode.BencodeDecodeError", "BencodeDecodeError");
-    return init_exception(ctx, mod, &BencodeEncodeError, "_bencode.BencodeEncodeError", "BencodeEncodeError");
+    init_exception(ctx, mod, &BencodeDecodeError, "bencode_hpy.BencodeDecodeError", "BencodeDecodeError");
+    return init_exception(ctx, mod, &BencodeEncodeError, "bencode_hpy.BencodeEncodeError", "BencodeEncodeError");
     // return true;
 }
 

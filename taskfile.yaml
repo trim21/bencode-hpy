@@ -4,6 +4,15 @@ tasks:
     cmds:
       - cmd: python setup.py build wheel
 
+  bump:
+    vars:
+      VERSION:
+        sh: yq '.project.version' pyproject.toml
+    cmds:
+      - git add pyproject.toml
+      - 'git commit -m "bump: {{.VERSION}}"'
+      - 'git tag "v{{.VERSION}}" -m "v{{.VERSION}}"'
+
   dev:
     sources:
       - src/**/*.c
@@ -15,11 +24,11 @@ tasks:
     generates:
       - src/**/*.so
     env:
-      HPY: trace
+      HPY: debug
       CFLAGS: "-O0 -g"
       # LD_PRELOAD: libclang_rt.asan.so
     cmds:
-      - cmd: python setup.py build_ext --inplace
+      - cmd: python setup.py --hpy-abi=universal build_ext --inplace
         silent: true
-      - PYTHONPATH=src python -X faulthandler a.py
+      - PYTHONPATH=src python -X faulthandler tests/leak.py
       - pytest -x -v -s
